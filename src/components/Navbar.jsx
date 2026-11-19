@@ -1,4 +1,5 @@
-function Navbar() {
+
+function Navbar(props) {
   return (
     <nav>
       <h2>IPL TICKET BOOKING</h2>
@@ -9,6 +10,8 @@ function Navbar() {
         <li>Book Tickets</li>
         <li>My Bookings</li>
       </ul>
+
+      <h3>Bookings: {props.bookingCount}</h3>
     </nav>
   );
 }
