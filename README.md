@@ -1,9 +1,11 @@
 # IPL React Booking
 
 ## Project Overview
+
 A React-based IPL Ticket Booking interface developed using Vite. The project demonstrates reusable React components, JSX, props, state management, and dynamic rendering of match details.
 
 ## Technologies Used
+
 - React JS
 - JavaScript
 - JSX
@@ -11,15 +13,19 @@ A React-based IPL Ticket Booking interface developed using Vite. The project dem
 - Vite
 
 ## Features
+
 - Navigation bar with Home, Matches, Book Tickets and My Bookings.
+- Dynamic booking count displayed in the Navbar.
 - Hero section introducing the IPL booking platform.
 - Reusable MatchCard component.
 - Dynamic match rendering using the `.map()` method.
 - Props for passing match details between components.
-- Interactive booking buttons using React `useState`.
-- Responsive CSS styling.
+- Interactive booking and cancellation buttons using React `useState`.
+- Booking count updates automatically when matches are selected or cancelled.
+- Responsive CSS styling for desktop and mobile layouts.
 
 ## Component Structure
+
 ```text
 src/
 ├── components/
@@ -33,6 +39,7 @@ src/
 ```
 
 ## React Concepts Implemented
+
 1. Functional Components
 2. JSX Syntax
 3. Props
@@ -61,4 +68,5 @@ npm run dev
 5. Open the local URL displayed in the terminal.
 
 ## Conclusion
-Successfully developed an IPL Ticket Booking interface using React JS, implementing reusable components, props, dynamic rendering, and state management.
+
+Successfully developed an IPL Ticket Booking interface using React JS, implementing reusable components, props, dynamic rendering, interactive booking functionality, and state management.
