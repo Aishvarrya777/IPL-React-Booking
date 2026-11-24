@@ -13,10 +13,12 @@ function App() {
   const [bookingCount, setBookingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Fetch matches from Supabase
   async function fetchMatches() {
     const { data, error } = await supabase
       .from('matches')
-      .select('*');
+      .select('*')
+      .order('id', { ascending: true });
 
     if (error) {
       console.error('Error fetching matches:', error.message);
@@ -27,53 +29,52 @@ function App() {
     setLoading(false);
   }
 
+  // Fetch total booked tickets
   async function fetchBookingCount() {
-  const { data, error } = await supabase
-    .from('bookings')
-    .select('tickets');
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('tickets');
 
-  if (error) {
-    console.error('Error fetching bookings:', error.message);
-    return;
+    if (error) {
+      console.error('Error fetching bookings:', error.message);
+      return;
+    }
+
+    const total = data.reduce(
+      (sum, booking) => sum + booking.tickets,
+      0
+    );
+
+    setBookingCount(total);
   }
 
-  const total = data.reduce(
-    (sum, booking) => sum + booking.tickets,
-    0
-  );
-
-  setBookingCount(total);
-}
-useEffect(() => {
-  // Fetch matches when the app loads
-  fetchMatches();
+  // Load data and listen for realtime updates
+  useEffect(() => {
+    fetchMatches();
     fetchBookingCount();
 
-  // Listen for database changes
-  const channel = supabase
-    .channel('matches-realtime')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'matches'
-      },
-      (payload) => {
-        console.log('Database changed:', payload);
-        fetchMatches();
-      }
-    )
-    .subscribe();
+    const channel = supabase
+      .channel('matches-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'matches'
+        },
+        () => {
+          fetchMatches();
+        }
+      )
+      .subscribe();
 
-  // Clean up subscription
-  return () => {
-    supabase.removeChannel(channel);
-  };
-}, []);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
-
-  async function handleBooking(id, tickets) {
+  // Handle ticket booking
+  async function handleBooking(id, tickets, category, pricePerTicket) {
     const match = matches.find((m) => m.id === id);
 
     if (!match || tickets < 1 || tickets > match.available_seats) {
@@ -81,7 +82,7 @@ useEffect(() => {
       return;
     }
 
-    // Update available seats
+    // Update available seats for the selected match only
     const { data: updatedMatch, error: updateError } = await supabase
       .from('matches')
       .update({
@@ -98,21 +99,23 @@ useEffect(() => {
       return;
     }
 
-    // Insert booking into database
+    // Save booking details in Supabase
     const { error: bookingError } = await supabase
       .from('bookings')
       .insert([
         {
           match_id: id,
           customer_name: 'Guest',
-          tickets: tickets
+          tickets: tickets,
+          ticket_category: category,
+          price_per_ticket: pricePerTicket,
+          total_amount: tickets * pricePerTicket
         }
       ]);
 
     if (bookingError) {
       console.error('Booking error:', bookingError.message);
 
-      // Restore seats if booking insertion fails
       await supabase
         .from('matches')
         .update({ available_seats: match.available_seats })
@@ -126,7 +129,6 @@ useEffect(() => {
     setBookingCount((previous) => previous + tickets);
 
     await fetchMatches();
-
     alert('Tickets booked successfully!');
   }
 
@@ -150,8 +152,8 @@ useEffect(() => {
                 date={match.match_date}
                 venue={match.venue}
                 availableSeats={match.available_seats}
-                onToggle={(tickets) =>
-                  handleBooking(match.id, tickets)
+                onToggle={(tickets, category, price) =>
+                  handleBooking(match.id, tickets, category, price)
                 }
               />
             ))}

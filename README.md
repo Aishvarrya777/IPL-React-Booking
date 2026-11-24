@@ -1,72 +1,113 @@
-# IPL React Booking
+# IPL React Ticket Booking System
 
-## Project Overview
-
-A React-based IPL Ticket Booking interface developed using Vite. The project demonstrates reusable React components, JSX, props, state management, and dynamic rendering of match details.
-
-## Technologies Used
-
-- React JS
-- JavaScript
-- JSX
-- CSS
-- Vite
+A web-based IPL ticket booking application built using **React, Vite, and Supabase**. Users can view upcoming matches, select ticket categories, choose the number of tickets, and book tickets with dynamically calculated prices.
 
 ## Features
 
-- Navigation bar with Home, Matches, Book Tickets and My Bookings.
-- Dynamic booking count displayed in the Navbar.
-- Hero section introducing the IPL booking platform.
-- Reusable MatchCard component.
-- Dynamic match rendering using the `.map()` method.
-- Props for passing match details between components.
-- Interactive booking and cancellation buttons using React `useState`.
-- Booking count updates automatically when matches are selected or cancelled.
-- Responsive CSS styling for desktop and mobile layouts.
+- Display IPL matches fetched from Supabase.
+- View match details, dates, venues, and available seats.
+- Book multiple tickets for a match.
+- Choose from three ticket categories:
+  - General – ₹500 per ticket
+  - Premium – ₹1,500 per ticket
+  - VIP – ₹3,000 per ticket
+- Automatically calculate the total ticket price.
+- Update available seats after successful booking.
+- Display the total number of booked tickets.
+- Store booking details in the Supabase database.
+- Realtime updates when match seat availability changes.
+- Booking data persists after refreshing the page.
 
-## Component Structure
+## Technologies Used
 
-```text
-src/
-├── components/
-│   ├── Navbar.jsx
-│   ├── Hero.jsx
-│   └── MatchCard.jsx
-├── App.jsx
-├── App.css
-├── index.css
-└── main.jsx
-```
+- **Frontend:** React.js
+- **Build Tool:** Vite
+- **Database:** Supabase
+- **Database Type:** PostgreSQL
+- **Styling:** CSS
+- **Programming Language:** JavaScript
 
-## React Concepts Implemented
+## Database Structure
 
-1. Functional Components
-2. JSX Syntax
-3. Props
-4. Component Reusability
-5. Array Mapping using `.map()`
-6. State Management using `useState`
-7. Event Handling
-8. Conditional Rendering
+### 1. Matches Table
 
-## How to Run the Project
+| Column | Description |
+|---|---|
+| id | Unique match ID |
+| team1 | First team |
+| team2 | Second team |
+| match_date | Match date |
+| venue | Match venue |
+| available_seats | Available tickets |
 
-1. Clone the repository.
-2. Open the project folder in VS Code.
+### 2. Bookings Table
+
+| Column | Description |
+|---|---|
+| id | Unique booking ID |
+| match_id | Associated match ID |
+| customer_name | Customer name |
+| tickets | Number of tickets |
+| ticket_category | Selected ticket category |
+| price_per_ticket | Price of one ticket |
+| total_amount | Total booking amount |
+| created_at | Booking timestamp |
+
+## React Concepts Used
+
+- Functional Components
+- React Hooks (`useState`, `useEffect`)
+- Props
+- Event Handling
+- Conditional Rendering
+- Fetching data from a database
+- Realtime subscriptions
+
+## Supabase Integration
+
+Supabase is used to:
+
+- Fetch match details from the database.
+- Insert new booking records.
+- Update available seats after booking.
+- Retrieve the total number of booked tickets.
+- Receive realtime updates for match availability.
+
+## Installation and Setup
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Aishvarrya777/IPL-React-Booking.git
+   ```
+
+2. Navigate to the project folder:
+
+   ```bash
+   cd IPL-React-Booking
+   ```
+
 3. Install dependencies:
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-4. Start the development server:
+4. Configure your Supabase project URL and publishable key in `src/supabase.js`.
 
-```bash
-npm run dev
-```
+5. Start the development server:
 
-5. Open the local URL displayed in the terminal.
+   ```bash
+   npm run dev
+   ```
 
-## Conclusion
+6. Open the local URL displayed in the terminal.
 
-Successfully developed an IPL Ticket Booking interface using React JS, implementing reusable components, props, dynamic rendering, interactive booking functionality, and state management.
+## Project Purpose
+
+This project was developed as part of an academic assignment to understand React development, database connectivity, CRUD operations, and realtime data handling using Supabase.
+
+---
+
+**Developed by:** Aishvarrya  
+**GitHub:** [Aishvarrya777](https://github.com/Aishvarrya777)
