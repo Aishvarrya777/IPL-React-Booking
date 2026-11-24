@@ -1,11 +1,14 @@
 
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import './App.css';
 import './index.css';
 
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import MatchCard from './components/MatchCard';
+import MyBookings from './components/MyBookings';
 import { supabase } from './supabase';
 
 function App() {
@@ -13,7 +16,6 @@ function App() {
   const [bookingCount, setBookingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Fetch matches from Supabase
   async function fetchMatches() {
     const { data, error } = await supabase
       .from('matches')
@@ -29,7 +31,6 @@ function App() {
     setLoading(false);
   }
 
-  // Fetch total booked tickets
   async function fetchBookingCount() {
     const { data, error } = await supabase
       .from('bookings')
@@ -48,7 +49,6 @@ function App() {
     setBookingCount(total);
   }
 
-  // Load data and listen for realtime updates
   useEffect(() => {
     fetchMatches();
     fetchBookingCount();
@@ -73,7 +73,6 @@ function App() {
     };
   }, []);
 
-  // Handle ticket booking
   async function handleBooking(id, tickets, category, pricePerTicket) {
     const match = matches.find((m) => m.id === id);
 
@@ -82,7 +81,6 @@ function App() {
       return;
     }
 
-    // Update available seats for the selected match only
     const { data: updatedMatch, error: updateError } = await supabase
       .from('matches')
       .update({
@@ -99,7 +97,6 @@ function App() {
       return;
     }
 
-    // Save booking details in Supabase
     const { error: bookingError } = await supabase
       .from('bookings')
       .insert([
@@ -133,34 +130,49 @@ function App() {
   }
 
   return (
-    <>
+    <BrowserRouter>
       <Navbar bookingCount={bookingCount} />
-      <Hero />
 
-      <section>
-        <h2>Upcoming Matches</h2>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Hero />
 
-        {loading ? (
-          <p>Loading matches...</p>
-        ) : (
-          <div className="matches-grid">
-            {matches.map((match) => (
-              <MatchCard
-                key={match.id}
-                team1={match.team1}
-                team2={match.team2}
-                date={match.match_date}
-                venue={match.venue}
-                availableSeats={match.available_seats}
-                onToggle={(tickets, category, price) =>
-                  handleBooking(match.id, tickets, category, price)
-                }
-              />
-            ))}
-          </div>
-        )}
-      </section>
-    </>
+              <section id="matches">
+                <h2>Upcoming Matches</h2>
+
+                {loading ? (
+                  <p>Loading matches...</p>
+                ) : (
+                  <div className="matches-grid">
+                    {matches.map((match) => (
+                      <MatchCard
+                        key={match.id}
+                        team1={match.team1}
+                        team2={match.team2}
+                        date={match.match_date}
+                        venue={match.venue}
+                        availableSeats={match.available_seats}
+                        onToggle={(tickets, category, price) =>
+                          handleBooking(match.id, tickets, category, price)
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
+            </>
+          }
+        />
+
+        <Route
+          path="/bookings"
+          element={<MyBookings />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
